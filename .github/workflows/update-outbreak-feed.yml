@@ -1,0 +1,40 @@
+name: Update outbreak feed
+
+on:
+  schedule:
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate scripts
+        run: npm run check
+
+      - name: Pull latest official feed
+        run: npm run update-feed
+
+      - name: Commit feed changes
+        run: |
+          if git diff --quiet -- data/outbreak-feed.js; then
+            echo "No feed changes to commit."
+            exit 0
+          fi
+
+          git config user.name "hantatracker26-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/outbreak-feed.js
+          git commit -m "Update outbreak feed"
+          git push

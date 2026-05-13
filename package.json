@@ -1,0 +1,11 @@
+{
+  "name": "hantatracker26",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check app.js && node --check scripts/update-outbreak-feed.mjs",
+    "serve": "python3 -m http.server 4177 --bind 127.0.0.1",
+    "update-feed": "node scripts/update-outbreak-feed.mjs"
+  }
+}

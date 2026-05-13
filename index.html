@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HantaTracker26</title>
+    <meta
+      name="description"
+      content="HantaTracker26 is an interactive hantavirus outbreak intelligence dashboard for tracking source-linked cases, exposure locations, routes, and verification status."
+    />
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.31/esri/themes/dark/main.css"
+    />
+    <link rel="stylesheet" href="./styles.css?v=official-feed-7" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="HantaTracker26 home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>
+            <strong>HantaTracker26</strong>
+            <small>Global outbreak intelligence</small>
+          </span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#map">Map</a>
+          <a href="#timeline">Timeline</a>
+          <a href="#method">Method</a>
+          <a href="#about">About</a>
+        </nav>
+        <div class="status-pill" id="statusPill">
+          <span class="status-dot"></span>
+          Official source feed
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" id="map">
+          <div class="control-panel">
+            <div class="panel-heading">
+              <p class="eyebrow">Hantavirus global monitor</p>
+              <h1>Source-linked outbreak intelligence on a live 3D Earth.</h1>
+              <p>
+                A professional command surface for tracking confirmed reports,
+                suspected signals, deaths, exposure sites, and travel-linked clusters.
+              </p>
+              <div class="quality-row" aria-label="Data quality indicators">
+                <span>Manual review</span>
+                <span>Source linked</span>
+                <span>Confidence scored</span>
+              </div>
+            </div>
+
+            <div class="summary-grid" id="summaryGrid" aria-label="Outbreak summary"></div>
+
+            <div class="status-card">
+              <div>
+                <span>Dataset status</span>
+                <strong id="datasetStatusValue">Official source feed</strong>
+              </div>
+              <p id="datasetStatusText">Loading reviewed WHO and ECDC outbreak data.</p>
+              <p class="status-meta" id="datasetMetaLine">Checking source freshness...</p>
+              <div class="status-actions">
+                <button class="small-button" id="checkFeed" type="button">Reload feed</button>
+                <a class="source-link" id="datasetSourceLink" href="#" target="_blank" rel="noreferrer">Open source</a>
+              </div>
+            </div>
+
+            <div class="tool-block">
+              <label class="search-box" for="caseSearch">
+                <span aria-hidden="true">Search</span>
+                <input
+                  id="caseSearch"
+                  type="search"
+                  autocomplete="off"
+                  placeholder="Country, city, route, source..."
+                />
+              </label>
+            </div>
+
+            <div class="tool-block">
+              <div class="tool-title">
+                <span>Filter layers</span>
+                <button class="small-button" id="resetFilters" type="button">Reset</button>
+              </div>
+              <div class="filter-grid" id="filterGrid" aria-label="Case filters"></div>
+            </div>
+
+            <div class="tool-block compact">
+              <div class="tool-title">
+                <span>Selected report window</span>
+                <output id="dateOutput" for="dateRange"></output>
+              </div>
+              <input
+                id="dateRange"
+                class="range"
+                type="range"
+                min="0"
+                max="0"
+                value="0"
+                step="1"
+              />
+            </div>
+          </div>
+
+          <div class="globe-stage">
+            <div class="globe-toolbar">
+              <div>
+                <p>Global event layer</p>
+                <strong id="globeStatus">Loading reports</strong>
+              </div>
+              <div class="view-actions" aria-label="Globe controls">
+                <button class="icon-button" id="homeGlobe" type="button" title="Reset globe view">
+                  <span aria-hidden="true">H</span>
+                </button>
+                <button class="icon-button" id="focusLatest" type="button" title="Focus latest report">
+                  <span aria-hidden="true">+</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="canvas-wrap">
+              <div id="globeViewport" aria-label="Hyper realistic hantavirus outbreak globe"></div>
+              <div class="map-fallback is-visible" id="globeFallback">
+                Loading ArcGIS satellite globe. If this stays visible, check internet access.
+              </div>
+              <div class="globe-callout">
+                <span>Active layer</span>
+                <strong>Case reports and travel links</strong>
+              </div>
+              <div class="marker-tooltip" id="markerTooltip" role="status"></div>
+            </div>
+
+            <div class="legend" aria-label="Map legend">
+              <span><i class="legend-key confirmed"></i>Confirmed</span>
+              <span><i class="legend-key suspected"></i>Suspected</span>
+              <span><i class="legend-key death"></i>Death</span>
+              <span><i class="legend-key exposure"></i>Exposure site</span>
+              <span><i class="legend-line"></i>Travel arc</span>
+            </div>
+          </div>
+
+          <aside class="detail-panel" id="detailPanel" aria-live="polite">
+            <div class="empty-state">
+              <span class="empty-icon"></span>
+              <h2>Report details</h2>
+              <p>Select a case marker to review confidence, source, dates, and notes.</p>
+            </div>
+          </aside>
+        </section>
+
+        <section class="timeline-section" id="timeline">
+          <div class="section-heading">
+            <p class="eyebrow">Case investigation timeline</p>
+            <h2>How reports unfold over time</h2>
+          </div>
+          <div class="timeline-track" id="timelineTrack"></div>
+        </section>
+
+        <section class="source-section" id="method">
+          <div class="section-heading">
+            <p class="eyebrow">Verification method</p>
+            <h2>Built for public-health data that can be audited.</h2>
+          </div>
+          <div class="source-grid">
+            <article>
+              <strong>Official first</strong>
+              <p>WHO, ECDC, CDC, PAHO, and national health ministries are prioritized over unreviewed reports.</p>
+            </article>
+            <article>
+              <strong>Confidence labels</strong>
+              <p>Reports are tagged high, medium, or developing so viewers understand how stable each signal is.</p>
+            </article>
+            <article>
+              <strong>Audit trail</strong>
+              <p>Each update keeps a date, source link, reporter note, and review timestamp for accountability.</p>
+            </article>
+            <article>
+              <strong>Case separation</strong>
+              <p>Confirmed, suspected, fatal, exposure, and monitoring records stay visually distinct.</p>
+            </article>
+            <article>
+              <strong>Route context</strong>
+              <p>Travel links are presented as investigation context, not proof of transmission.</p>
+            </article>
+            <article>
+              <strong>Launch ready path</strong>
+              <p>The demo data model can be replaced by Supabase records and an admin review workflow.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="about-section" id="about">
+          <div class="about-copy">
+            <p class="eyebrow">Public health disclaimer</p>
+            <h2>Informational demo, not medical advice.</h2>
+            <p>
+              This interface uses public outbreak records from official health agencies where available.
+              Counts can change quickly, so visible totals should remain tied to source links and review timestamps.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://js.arcgis.com/4.31/"></script>
+    <script src="./data/outbreak-feed.js?v=official-20260513-3"></script>
+    <script src="./app.js?v=official-feed-4"></script>
+  </body>
+</html>
