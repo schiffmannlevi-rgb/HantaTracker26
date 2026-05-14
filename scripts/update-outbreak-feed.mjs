@@ -147,6 +147,7 @@ function applyParsedFeed(feed, parsed) {
 
   const cluster = feed.reports.find((report) => report.id === "WHO-DON600-MV-HONDIUS");
   if (cluster) {
+    cluster.isAggregate = true;
     cluster.confirmed = parsed.confirmedCases;
     cluster.suspected = parsed.probableCases;
     cluster.inconclusive = parsed.inconclusiveCases;

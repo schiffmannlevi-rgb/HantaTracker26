@@ -287,9 +287,8 @@ function getVisibleRoutes() {
   );
 }
 
-function renderSummary() {
-  const visible = getVisibleReports();
-  const totals = visible.reduce(
+function summarizeReports(reportSet) {
+  return reportSet.reduce(
     (acc, report) => {
       acc.confirmed += report.confirmed;
       acc.suspected += report.suspected;
@@ -300,22 +299,64 @@ function renderSummary() {
     },
     { confirmed: 0, suspected: 0, inconclusive: 0, deaths: 0, countries: new Set() }
   );
+}
 
+function reportIsAggregate(report) {
+  return (
+    report.isAggregate ||
+    report.id === "WHO-DON600-MV-HONDIUS" ||
+    /official who snapshot/i.test(report.notes || "")
+  );
+}
+
+function allCategoryFiltersActive() {
+  return Object.keys(categoryMeta).every((category) => state.activeCategories.has(category));
+}
+
+function getSummaryReports(visible, useOfficialSummary) {
+  if (useOfficialSummary || state.search.trim()) return visible;
+
+  const granularReports = visible.filter((report) => !reportIsAggregate(report));
+  return granularReports.length ? granularReports : visible;
+}
+
+function renderSummary() {
+  const visible = getVisibleReports();
+  const selectedDate = dateOptions[state.dateIndex];
+  const officialDate = dataMeta.sourceAsOfDate || dataMeta.lastUpdated?.slice(0, 10);
   const official = dataMeta.summary;
-  const cards = official
+  const useOfficialSummary =
+    Boolean(official) &&
+    Boolean(officialDate) &&
+    selectedDate >= officialDate &&
+    !state.search.trim() &&
+    allCategoryFiltersActive();
+  const officialTotal = official
+    ? official.totalCases ?? official.confirmedCases + official.probableCases + (official.inconclusiveCases || 0)
+    : 0;
+  const summaryReports = getSummaryReports(visible, useOfficialSummary);
+  const totals = summarizeReports(summaryReports);
+
+  const cards = useOfficialSummary
     ? [
-        ["Total", official.totalCases ?? official.confirmedCases + official.probableCases, "WHO reported"],
-        ["Confirmed", official.confirmedCases, "ANDV lab-confirmed"],
+        [
+          "Total",
+          officialTotal,
+          `Official through ${formatFriendlyDate(officialDate)}`
+        ],
+        ["Confirmed", official.confirmedCases, "WHO lab-confirmed"],
         ["Probable", official.probableCases, "WHO case definition"],
-        ["Inconclusive", official.inconclusiveCases || 0, "Retesting"],
-        ["Deaths", official.deaths, "Reported outcomes"],
+        ["Inconclusive", official.inconclusiveCases || 0, "Retesting status"],
+        ["Deaths", official.deaths, "WHO reported"],
         ["Risk", official.globalRisk, "WHO global risk"]
       ]
     : [
-        ["Confirmed", totals.confirmed, "Source-linked"],
-        ["Suspected", totals.suspected, "Unverified"],
-        ["Deaths", totals.deaths, "Fatal reports"],
-        ["Countries", totals.countries.size, "Visible"]
+        ["Total", totals.confirmed + totals.suspected + totals.inconclusive, `Through ${formatFriendlyDate(selectedDate)}`],
+        ["Confirmed", totals.confirmed, "Visible records"],
+        ["Probable", totals.suspected, "Visible records"],
+        ["Inconclusive", totals.inconclusive, "Visible records"],
+        ["Deaths", totals.deaths, "Visible records"],
+        ["Signals", summaryReports.length, "Visible source records"]
       ];
 
   summaryGrid.innerHTML = cards
@@ -345,9 +386,9 @@ function renderSummary() {
     return;
   }
 
-  globeStatus.textContent = official
-    ? `${visible.length} visible ${visibleSignalLabel} | ${official.totalCases ?? official.confirmedCases + official.probableCases} total cases through ${formatFriendlyDate(dateOptions[state.dateIndex])}`
-    : `${visible.length} visible reports through ${formatFriendlyDate(dateOptions[state.dateIndex])}`;
+  globeStatus.textContent = useOfficialSummary
+    ? `${visible.length} visible ${visibleSignalLabel} | ${officialTotal} total cases, official through ${formatFriendlyDate(officialDate)}`
+    : `${summaryReports.length} summarized ${summaryReports.length === 1 ? "signal" : "signals"} | ${totals.confirmed + totals.suspected + totals.inconclusive} cases through ${formatFriendlyDate(dateOptions[state.dateIndex])}`;
 }
 
 function renderFilters() {

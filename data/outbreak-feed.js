@@ -40,6 +40,7 @@ window.HANTATRACK_FEED = {
   "reports": [
     {
       "id": "WHO-DON600-MV-HONDIUS",
+      "isAggregate": true,
       "location": "MV Hondius multi-country cluster",
       "country": "Multi-country",
       "lat": 28.2916,
