@@ -218,20 +218,46 @@ function hexToRgba(hex, alpha = 1) {
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255, alpha];
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function normalizeSearchText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s/.-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getSearchQuery() {
+  return normalizeSearchText(state.search);
+}
+
+function textMatchesPlaceQuery(value, query) {
+  const text = normalizeSearchText(value);
+  if (!text || query.length < 2) return false;
+
+  if (text === query || text.startsWith(query)) return true;
+  if (text.includes(` ${query}`)) return true;
+
+  return text.split(/[\s/.-]+/).some((word) => word.startsWith(query));
+}
+
 function reportMatchesSearch(report) {
-  if (!state.search) return true;
-  const haystack = [
-    report.id,
-    report.location,
-    report.country,
-    report.type,
-    report.sourceName,
-    report.confidence,
-    report.notes
-  ]
-    .join(" ")
-    .toLowerCase();
-  return haystack.includes(state.search.toLowerCase());
+  if (!state.search.trim()) return true;
+
+  const query = getSearchQuery();
+  if (!query || query.length < 2) return false;
+
+  return [report.country, report.location, ...(report.aliases || [])].some((value) =>
+    textMatchesPlaceQuery(value, query)
+  );
 }
 
 function reportIsVisible(report) {
@@ -307,6 +333,12 @@ function renderSummary() {
   const visibleSignalLabel = visible.length === 1 ? "signal" : "signals";
 
   if (state.search) {
+    const query = getSearchQuery();
+    if (!query || query.length < 2) {
+      globeStatus.textContent = `Type at least 2 letters to search locations through ${formatFriendlyDate(dateOptions[state.dateIndex])}`;
+      return;
+    }
+
     const filteredCases = totals.confirmed + totals.suspected + totals.inconclusive;
     const filteredCaseLabel = filteredCases === 1 ? "case" : "cases";
     globeStatus.textContent = `${visible.length} visible ${visibleSignalLabel} | ${filteredCases} ${filteredCaseLabel} matching "${state.search}" through ${formatFriendlyDate(dateOptions[state.dateIndex])}`;
@@ -345,10 +377,19 @@ function renderDateOutput() {
 function renderSearchResult() {
   if (!searchResult) return;
 
-  const query = state.search.trim();
-  if (!query) {
+  const displayQuery = state.search.trim();
+  const query = getSearchQuery();
+  const safeDisplayQuery = escapeHtml(displayQuery);
+
+  if (!displayQuery) {
     searchResult.className = "search-result is-empty";
     searchResult.textContent = "Search a country to see matching case counts.";
+    return;
+  }
+
+  if (!query || query.length < 2) {
+    searchResult.className = "search-result is-zero";
+    searchResult.innerHTML = `<strong>0</strong><span>Type at least 2 letters to search.</span>`;
     return;
   }
 
@@ -368,7 +409,7 @@ function renderSearchResult() {
 
   if (!matched.length || totals.cases + totals.deaths === 0) {
     searchResult.className = "search-result is-zero";
-    searchResult.innerHTML = `<strong>0</strong><span>No cases found for "${query}"</span>`;
+    searchResult.innerHTML = `<strong>0</strong><span>No cases found for "${safeDisplayQuery}"</span>`;
     return;
   }
 
@@ -382,7 +423,7 @@ function renderSearchResult() {
   const breakdownText = breakdown.length ? ` (${breakdown.join(", ")})` : "";
   const signalText = totals.signals === 1 ? "1 source signal" : `${totals.signals} source signals`;
   searchResult.className = "search-result has-result";
-  searchResult.innerHTML = `<strong>${totals.cases}</strong><span>${caseLabel} found for "${query}"${breakdownText}. ${signalText} visible.</span>`;
+  searchResult.innerHTML = `<strong>${totals.cases}</strong><span>${caseLabel} found for "${safeDisplayQuery}"${breakdownText}. ${signalText} visible.</span>`;
 }
 
 function renderTimeline() {
