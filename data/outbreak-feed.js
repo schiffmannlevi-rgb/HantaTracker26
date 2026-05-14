@@ -1,5 +1,5 @@
 window.HANTATRACK_FEED = {
-  "version": "official-2026-05-12-1778693830554",
+  "version": "official-2026-05-12-1778774785784",
   "meta": {
     "label": "Official source feed",
     "statusText": "WHO Director-General media briefing: 9 confirmed, 2 probable, 3 deaths. No synthetic counts are displayed.",
@@ -27,7 +27,7 @@ window.HANTATRACK_FEED = {
     ],
     "primarySource": "WHO Director-General media briefing",
     "primarySourceUrl": "https://www.who.int/news-room/speeches/item/who-director-general-s-opening-remarks-at-the-media-briefing-on-hantavirus---12-may-2026",
-    "lastFetched": "2026-05-13T17:37:10.552Z",
+    "lastFetched": "2026-05-14T16:06:25.780Z",
     "sourceAsOfDate": "2026-05-12",
     "updateCadence": "Daily at 8:00 AM local; browser checks the local feed every 5 minutes."
   },
