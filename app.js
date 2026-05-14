@@ -87,7 +87,12 @@ const state = {
 };
 
 function syncDateOptions(selectLatest = false) {
-  dateOptions = [...new Set(reports.map((report) => report.date))].sort();
+  const currentViewDate = getIsoDate(dataMeta.lastFetched || dataMeta.lastChecked || new Date().toISOString());
+  const reportDates = [...new Set(reports.map((report) => report.date).filter(Boolean))].sort();
+  const startDate = reportDates[0] || currentViewDate;
+  const endCandidates = [reportDates[reportDates.length - 1], currentViewDate].filter(Boolean).sort();
+  const endDate = endCandidates[endCandidates.length - 1];
+  dateOptions = getDailyDateRange(startDate, endDate);
   if (!dateOptions.length) {
     const today = new Date().toISOString().slice(0, 10);
     dateOptions = [today];
@@ -106,13 +111,13 @@ function syncDateOptions(selectLatest = false) {
 function updateDatasetStatus() {
   const sourceDate = dataMeta.sourceAsOfDate || dataMeta.lastUpdated?.slice(0, 10);
   const sourceAt = sourceDate
-    ? `Official source date: ${formatDate(sourceDate)}`
+    ? `Official source: ${formatDate(sourceDate)}`
     : "";
   const pulledAt = dataMeta.lastFetched
-    ? `Updater pulled: ${statusTimeFormatter.format(new Date(dataMeta.lastFetched))}`
+    ? `Feed updated: ${statusTimeFormatter.format(new Date(dataMeta.lastFetched))}`
     : "";
   const checkedAt = dataMeta.lastChecked
-    ? `Browser checked: ${statusTimeFormatter.format(new Date(dataMeta.lastChecked))}`
+    ? `Page refreshed: ${statusTimeFormatter.format(new Date(dataMeta.lastChecked))}`
     : "";
   const cadence = dataMeta.updateCadence ? `Schedule: ${dataMeta.updateCadence}` : "";
 
@@ -166,8 +171,37 @@ function formatDate(date) {
   return dateFormatter.format(new Date(`${date}T12:00:00`));
 }
 
+function getDailyDateRange(startDate, endDate) {
+  if (!startDate || !endDate) return [];
+  const dates = [];
+  const cursor = new Date(`${startDate}T12:00:00`);
+  const end = new Date(`${endDate}T12:00:00`);
+
+  while (cursor <= end) {
+    dates.push(cursor.toISOString().slice(0, 10));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return dates;
+}
+
 function formatShortDate(date) {
   return shortDateFormatter.format(new Date(`${date}T12:00:00`));
+}
+
+function getOrdinalSuffix(day) {
+  if (day > 3 && day < 21) return "th";
+  if (day % 10 === 1) return "st";
+  if (day % 10 === 2) return "nd";
+  if (day % 10 === 3) return "rd";
+  return "th";
+}
+
+function formatFriendlyDate(date) {
+  const parsed = new Date(`${date}T12:00:00`);
+  const month = new Intl.DateTimeFormat("en-US", { month: "short" }).format(parsed);
+  const day = parsed.getDate();
+  return `${month} ${day}${getOrdinalSuffix(day)}`;
 }
 
 function getIsoDate(value) {
@@ -233,18 +267,21 @@ function renderSummary() {
     (acc, report) => {
       acc.confirmed += report.confirmed;
       acc.suspected += report.suspected;
+      acc.inconclusive += report.inconclusive || 0;
       acc.deaths += report.deaths;
       acc.countries.add(report.country);
       return acc;
     },
-    { confirmed: 0, suspected: 0, deaths: 0, countries: new Set() }
+    { confirmed: 0, suspected: 0, inconclusive: 0, deaths: 0, countries: new Set() }
   );
 
   const official = dataMeta.summary;
   const cards = official
     ? [
-        ["Confirmed", official.confirmedCases, "WHO lab-confirmed"],
+        ["Total", official.totalCases ?? official.confirmedCases + official.probableCases, "WHO reported"],
+        ["Confirmed", official.confirmedCases, "ANDV lab-confirmed"],
         ["Probable", official.probableCases, "WHO case definition"],
+        ["Inconclusive", official.inconclusiveCases || 0, "Retesting"],
         ["Deaths", official.deaths, "Reported outcomes"],
         ["Risk", official.globalRisk, "WHO global risk"]
       ]
@@ -267,20 +304,18 @@ function renderSummary() {
     )
     .join("");
 
-  const checkedDate = getIsoDate(dataMeta.lastChecked);
-  const checkedSuffix = checkedDate ? ` | checked ${formatShortDate(checkedDate)}` : "";
   const visibleSignalLabel = visible.length === 1 ? "signal" : "signals";
 
   if (state.search) {
-    const filteredCases = totals.confirmed + totals.suspected;
+    const filteredCases = totals.confirmed + totals.suspected + totals.inconclusive;
     const filteredCaseLabel = filteredCases === 1 ? "case" : "cases";
-    globeStatus.textContent = `${visible.length} visible ${visibleSignalLabel} | ${filteredCases} ${filteredCaseLabel} matching "${state.search}" through ${formatShortDate(dateOptions[state.dateIndex])}${checkedSuffix}`;
+    globeStatus.textContent = `${visible.length} visible ${visibleSignalLabel} | ${filteredCases} ${filteredCaseLabel} matching "${state.search}" through ${formatFriendlyDate(dateOptions[state.dateIndex])}`;
     return;
   }
 
   globeStatus.textContent = official
-    ? `${visible.length} visible ${visibleSignalLabel} | ${official.confirmedCases} confirmed, ${official.probableCases} probable through ${formatShortDate(dateOptions[state.dateIndex])}${checkedSuffix}`
-    : `${visible.length} visible reports through ${formatShortDate(dateOptions[state.dateIndex])}${checkedSuffix}`;
+    ? `${visible.length} visible ${visibleSignalLabel} | ${official.totalCases ?? official.confirmedCases + official.probableCases} total cases through ${formatFriendlyDate(dateOptions[state.dateIndex])}`
+    : `${visible.length} visible reports through ${formatFriendlyDate(dateOptions[state.dateIndex])}`;
 }
 
 function renderFilters() {
@@ -304,9 +339,7 @@ function renderFilters() {
 
 function renderDateOutput() {
   const reportDate = dateOptions[state.dateIndex];
-  const checkedDate = getIsoDate(dataMeta.lastChecked);
-  const checkedText = checkedDate ? ` · checked ${formatShortDate(checkedDate)}` : "";
-  dateOutput.textContent = `Through ${formatShortDate(reportDate)}${checkedText}`;
+  dateOutput.textContent = formatFriendlyDate(reportDate);
 }
 
 function renderSearchResult() {
@@ -322,12 +355,15 @@ function renderSearchResult() {
   const matched = getSearchResultReports();
   const totals = matched.reduce(
     (acc, report) => {
-      acc.cases += report.confirmed + report.suspected;
+      acc.confirmed += report.confirmed;
+      acc.probable += report.suspected;
+      acc.inconclusive += report.inconclusive || 0;
+      acc.cases += report.confirmed + report.suspected + (report.inconclusive || 0);
       acc.deaths += report.deaths;
       acc.signals += 1;
       return acc;
     },
-    { cases: 0, deaths: 0, signals: 0 }
+    { cases: 0, confirmed: 0, probable: 0, inconclusive: 0, deaths: 0, signals: 0 }
   );
 
   if (!matched.length || totals.cases + totals.deaths === 0) {
@@ -337,10 +373,16 @@ function renderSearchResult() {
   }
 
   const caseLabel = totals.cases === 1 ? "case" : "cases";
-  const deathText = totals.deaths ? `, ${totals.deaths} death${totals.deaths === 1 ? "" : "s"}` : "";
+  const breakdown = [
+    totals.confirmed ? `${totals.confirmed} confirmed` : "",
+    totals.probable ? `${totals.probable} probable` : "",
+    totals.inconclusive ? `${totals.inconclusive} inconclusive` : "",
+    totals.deaths ? `${totals.deaths} death${totals.deaths === 1 ? "" : "s"}` : ""
+  ].filter(Boolean);
+  const breakdownText = breakdown.length ? ` (${breakdown.join(", ")})` : "";
   const signalText = totals.signals === 1 ? "1 source signal" : `${totals.signals} source signals`;
   searchResult.className = "search-result has-result";
-  searchResult.innerHTML = `<strong>${totals.cases}</strong><span>${caseLabel} found for "${query}"${deathText}. ${signalText} visible.</span>`;
+  searchResult.innerHTML = `<strong>${totals.cases}</strong><span>${caseLabel} found for "${query}"${breakdownText}. ${signalText} visible.</span>`;
 }
 
 function renderTimeline() {
@@ -375,6 +417,7 @@ function renderDetail() {
   }
 
   const color = getReportColor(report);
+  const inconclusive = report.inconclusive || 0;
   detailPanel.innerHTML = `
     <article class="case-detail" style="--case-color: ${color}">
       <div class="detail-topline">
@@ -393,8 +436,12 @@ function renderDetail() {
           <strong>${report.confirmed}</strong>
         </div>
         <div class="mini-metric">
-          <span>Suspected</span>
+          <span>Probable</span>
           <strong>${report.suspected}</strong>
+        </div>
+        <div class="mini-metric">
+          <span>Inconclusive</span>
+          <strong>${inconclusive}</strong>
         </div>
         <div class="mini-metric">
           <span>Deaths</span>

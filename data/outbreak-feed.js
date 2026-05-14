@@ -1,17 +1,23 @@
 window.HANTATRACK_FEED = {
-  "version": "official-2026-05-12-1778774785784",
+  "version": "official-2026-05-13-1778777120537",
   "meta": {
     "label": "Official source feed",
-    "statusText": "WHO Director-General media briefing: 9 confirmed, 2 probable, 3 deaths. No synthetic counts are displayed.",
+    "statusText": "WHO Disease Outbreak News DON601: 11 total cases, 8 confirmed, 2 probable, 1 inconclusive, 3 deaths.",
     "refreshMinutes": 5,
-    "lastUpdated": "2026-05-12T17:00:00Z",
+    "lastUpdated": "2026-05-13T17:00:00Z",
     "summary": {
-      "confirmedCases": 9,
+      "totalCases": 11,
+      "confirmedCases": 8,
       "probableCases": 2,
+      "inconclusiveCases": 1,
       "deaths": 3,
       "globalRisk": "Low"
     },
     "sources": [
+      {
+        "name": "WHO Disease Outbreak News DON601",
+        "url": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON601"
+      },
       {
         "name": "WHO Disease Outbreak News DON600",
         "url": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON600"
@@ -25,30 +31,31 @@ window.HANTATRACK_FEED = {
         "url": "https://www.ecdc.europa.eu/en/news-events/andes-hantavirus-outbreak-ecdc-continues-working-frontline-support-eu-member-states"
       }
     ],
-    "primarySource": "WHO Director-General media briefing",
-    "primarySourceUrl": "https://www.who.int/news-room/speeches/item/who-director-general-s-opening-remarks-at-the-media-briefing-on-hantavirus---12-may-2026",
-    "lastFetched": "2026-05-14T16:06:25.780Z",
-    "sourceAsOfDate": "2026-05-12",
-    "updateCadence": "Daily at 8:00 AM local; browser checks the local feed every 5 minutes."
+    "primarySource": "WHO Disease Outbreak News DON601",
+    "primarySourceUrl": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON601",
+    "lastFetched": "2026-05-14T16:45:20.536Z",
+    "sourceAsOfDate": "2026-05-13",
+    "updateCadence": "Daily at 8:00 AM local; page refreshes the local feed every 5 minutes."
   },
   "reports": [
     {
       "id": "WHO-DON600-MV-HONDIUS",
-      "location": "MV Hondius receiving point, Tenerife",
-      "country": "Spain",
+      "location": "MV Hondius multi-country cluster",
+      "country": "Multi-country",
       "lat": 28.2916,
       "lng": -16.6291,
       "category": "confirmed",
       "type": "Cruise-Linked Cluster",
-      "confirmed": 9,
+      "confirmed": 8,
       "suspected": 2,
       "deaths": 3,
-      "date": "2026-05-12",
-      "sourceName": "WHO Director-General media briefing",
-      "sourceUrl": "https://www.who.int/news-room/speeches/item/who-director-general-s-opening-remarks-at-the-media-briefing-on-hantavirus---12-may-2026",
+      "date": "2026-05-13",
+      "sourceName": "WHO Disease Outbreak News DON601",
+      "sourceUrl": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON601",
       "confidence": "High",
       "confidenceScore": 95,
-      "notes": "Official WHO snapshot for the cruise-linked Andes hantavirus event: 9 confirmed cases, 2 probable cases, and 3 deaths. WHO assessed global public-health risk as low."
+      "notes": "Official WHO snapshot for the cruise-linked Andes hantavirus event: 11 total cases, including 8 confirmed, 2 probable, 1 inconclusive, and 3 deaths. WHO assessed global public-health risk as low.",
+      "inconclusive": 1
     },
     {
       "id": "WHO-DON600-EXPOSURE-ARG-CHL",
@@ -141,6 +148,43 @@ window.HANTATRACK_FEED = {
       "notes": "ECDC reported one new confirmed case in France on 11 May: a former passenger who developed acute symptoms during the return flight and was in intensive care."
     },
     {
+      "id": "WHO-DON601-ESP-CONFIRMED",
+      "location": "Spain repatriation confirmed case",
+      "country": "Spain",
+      "lat": 40.4168,
+      "lng": -3.7038,
+      "category": "confirmed",
+      "type": "Confirmed Case",
+      "confirmed": 1,
+      "suspected": 0,
+      "deaths": 0,
+      "date": "2026-05-13",
+      "sourceName": "WHO Disease Outbreak News DON601",
+      "sourceUrl": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON601",
+      "confidence": "High",
+      "confidenceScore": 88,
+      "notes": "WHO reports one confirmed case from Spain, tested after repatriation and currently well and asymptomatic."
+    },
+    {
+      "id": "WHO-DON601-USA-INCONCLUSIVE",
+      "location": "United States inconclusive result",
+      "country": "United States",
+      "lat": 39.8283,
+      "lng": -98.5795,
+      "category": "monitoring",
+      "type": "Inconclusive Case",
+      "confirmed": 0,
+      "suspected": 0,
+      "inconclusive": 1,
+      "deaths": 0,
+      "date": "2026-05-13",
+      "sourceName": "WHO Disease Outbreak News DON601",
+      "sourceUrl": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON601",
+      "confidence": "Developing",
+      "confidenceScore": 68,
+      "notes": "WHO reports one case repatriated to the United States with inconclusive laboratory results, currently asymptomatic and undergoing retesting."
+    },
+    {
       "id": "ECDC-THREAT-ASSESSMENT-EUEEA",
       "location": "EU/EEA response coordination",
       "country": "European Union",
@@ -163,7 +207,7 @@ window.HANTATRACK_FEED = {
     {
       "id": "route-exposure-to-ship",
       "from": "Argentina and Chile exposure investigation",
-      "to": "MV Hondius receiving point, Tenerife",
+      "to": "MV Hondius multi-country cluster",
       "start": [
         -53.2,
         -70.1
@@ -176,7 +220,7 @@ window.HANTATRACK_FEED = {
     },
     {
       "id": "route-ship-netherlands",
-      "from": "MV Hondius receiving point, Tenerife",
+      "from": "MV Hondius multi-country cluster",
       "to": "Netherlands medical evacuation",
       "start": [
         28.2916,
@@ -190,7 +234,7 @@ window.HANTATRACK_FEED = {
     },
     {
       "id": "route-ship-switzerland",
-      "from": "MV Hondius receiving point, Tenerife",
+      "from": "MV Hondius multi-country cluster",
       "to": "Switzerland hospitalized case",
       "start": [
         28.2916,
@@ -204,7 +248,7 @@ window.HANTATRACK_FEED = {
     },
     {
       "id": "route-ship-tristan",
-      "from": "MV Hondius receiving point, Tenerife",
+      "from": "MV Hondius multi-country cluster",
       "to": "Tristan da Cunha probable case",
       "start": [
         28.2916,
@@ -218,7 +262,7 @@ window.HANTATRACK_FEED = {
     },
     {
       "id": "route-ship-france",
-      "from": "MV Hondius receiving point, Tenerife",
+      "from": "MV Hondius multi-country cluster",
       "to": "France intensive care case",
       "start": [
         28.2916,
@@ -229,6 +273,34 @@ window.HANTATRACK_FEED = {
         2.2137
       ],
       "date": "2026-05-11"
+    },
+    {
+      "id": "route-ship-spain",
+      "from": "MV Hondius multi-country cluster",
+      "to": "Spain repatriation confirmed case",
+      "start": [
+        28.2916,
+        -16.6291
+      ],
+      "end": [
+        40.4168,
+        -3.7038
+      ],
+      "date": "2026-05-13"
+    },
+    {
+      "id": "route-ship-united-states",
+      "from": "MV Hondius multi-country cluster",
+      "to": "United States inconclusive result",
+      "start": [
+        28.2916,
+        -16.6291
+      ],
+      "end": [
+        39.8283,
+        -98.5795
+      ],
+      "date": "2026-05-13"
     }
   ],
   "timeline": [
@@ -257,9 +329,9 @@ window.HANTATRACK_FEED = {
       "category": "confirmed"
     },
     {
-      "date": "2026-05-12",
+      "date": "2026-05-13",
       "title": "WHO official snapshot",
-      "description": "WHO reports 9 confirmed cases, 2 probable cases, and 3 deaths, with low global public-health risk.",
+      "description": "WHO reports 11 total cases: 8 confirmed, 2 probable, 1 inconclusive, and 3 deaths, with low global public-health risk.",
       "category": "confirmed"
     }
   ]
