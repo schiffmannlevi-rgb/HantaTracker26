@@ -633,14 +633,12 @@ h1 {
   width: 19px;
   height: 19px;
   margin-top: -7px;
-  border: 2px solid #e6fbff;
+  border: 2px solid rgba(7, 12, 18, 0.95);
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, #ffffff 0 2px, transparent 3px),
-    linear-gradient(145deg, #ffe7a3, #f6b749 58%, #8f5c12);
+  background: #f7fbff;
   box-shadow:
-    0 0 0 1px rgba(246, 183, 73, 0.2),
-    0 0 18px rgba(246, 183, 73, 0.45);
+    0 0 0 1px rgba(255, 255, 255, 0.24),
+    0 3px 12px rgba(0, 0, 0, 0.42);
   appearance: none;
   -webkit-appearance: none;
 }
@@ -664,14 +662,12 @@ h1 {
 .range::-moz-range-thumb {
   width: 19px;
   height: 19px;
-  border: 2px solid #e6fbff;
+  border: 2px solid rgba(7, 12, 18, 0.95);
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, #ffffff 0 2px, transparent 3px),
-    linear-gradient(145deg, #ffe7a3, #f6b749 58%, #8f5c12);
+  background: #f7fbff;
   box-shadow:
-    0 0 0 1px rgba(246, 183, 73, 0.2),
-    0 0 18px rgba(246, 183, 73, 0.45);
+    0 0 0 1px rgba(255, 255, 255, 0.24),
+    0 3px 12px rgba(0, 0, 0, 0.42);
 }
 
 .range::-moz-focus-outer {
