@@ -14,6 +14,7 @@ const summaryGrid = document.querySelector("#summaryGrid");
 const filterGrid = document.querySelector("#filterGrid");
 const resetFiltersButton = document.querySelector("#resetFilters");
 const searchInput = document.querySelector("#caseSearch");
+const searchResult = document.querySelector("#searchResult");
 const detailPanel = document.querySelector("#detailPanel");
 const dateRange = document.querySelector("#dateRange");
 const dateOutput = document.querySelector("#dateOutput");
@@ -42,6 +43,10 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
   year: "numeric"
+});
+const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric"
 });
 const statusTimeFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -161,6 +166,14 @@ function formatDate(date) {
   return dateFormatter.format(new Date(`${date}T12:00:00`));
 }
 
+function formatShortDate(date) {
+  return shortDateFormatter.format(new Date(`${date}T12:00:00`));
+}
+
+function getIsoDate(value) {
+  return value ? String(value).slice(0, 10) : "";
+}
+
 function getReportColor(report) {
   return categoryMeta[report.category]?.color || "#ffffff";
 }
@@ -197,6 +210,11 @@ function reportIsVisible(report) {
 
 function getVisibleReports() {
   return reports.filter(reportIsVisible);
+}
+
+function getSearchResultReports() {
+  if (!state.search) return [];
+  return getVisibleReports();
 }
 
 function getVisibleRoutes() {
@@ -249,9 +267,20 @@ function renderSummary() {
     )
     .join("");
 
+  const checkedDate = getIsoDate(dataMeta.lastChecked);
+  const checkedSuffix = checkedDate ? ` | checked ${formatShortDate(checkedDate)}` : "";
+  const visibleSignalLabel = visible.length === 1 ? "signal" : "signals";
+
+  if (state.search) {
+    const filteredCases = totals.confirmed + totals.suspected;
+    const filteredCaseLabel = filteredCases === 1 ? "case" : "cases";
+    globeStatus.textContent = `${visible.length} visible ${visibleSignalLabel} | ${filteredCases} ${filteredCaseLabel} matching "${state.search}" through ${formatShortDate(dateOptions[state.dateIndex])}${checkedSuffix}`;
+    return;
+  }
+
   globeStatus.textContent = official
-    ? `${visible.length} visible signals | ${official.confirmedCases} confirmed, ${official.probableCases} probable through ${formatDate(dateOptions[state.dateIndex])}`
-    : `${visible.length} visible reports through ${formatDate(dateOptions[state.dateIndex])}`;
+    ? `${visible.length} visible ${visibleSignalLabel} | ${official.confirmedCases} confirmed, ${official.probableCases} probable through ${formatShortDate(dateOptions[state.dateIndex])}${checkedSuffix}`
+    : `${visible.length} visible reports through ${formatShortDate(dateOptions[state.dateIndex])}${checkedSuffix}`;
 }
 
 function renderFilters() {
@@ -274,7 +303,44 @@ function renderFilters() {
 }
 
 function renderDateOutput() {
-  dateOutput.textContent = formatDate(dateOptions[state.dateIndex]);
+  const reportDate = dateOptions[state.dateIndex];
+  const checkedDate = getIsoDate(dataMeta.lastChecked);
+  const checkedText = checkedDate ? ` · checked ${formatShortDate(checkedDate)}` : "";
+  dateOutput.textContent = `Through ${formatShortDate(reportDate)}${checkedText}`;
+}
+
+function renderSearchResult() {
+  if (!searchResult) return;
+
+  const query = state.search.trim();
+  if (!query) {
+    searchResult.className = "search-result is-empty";
+    searchResult.textContent = "Search a country to see matching case counts.";
+    return;
+  }
+
+  const matched = getSearchResultReports();
+  const totals = matched.reduce(
+    (acc, report) => {
+      acc.cases += report.confirmed + report.suspected;
+      acc.deaths += report.deaths;
+      acc.signals += 1;
+      return acc;
+    },
+    { cases: 0, deaths: 0, signals: 0 }
+  );
+
+  if (!matched.length || totals.cases + totals.deaths === 0) {
+    searchResult.className = "search-result is-zero";
+    searchResult.innerHTML = `<strong>0</strong><span>No cases found for "${query}"</span>`;
+    return;
+  }
+
+  const caseLabel = totals.cases === 1 ? "case" : "cases";
+  const deathText = totals.deaths ? `, ${totals.deaths} death${totals.deaths === 1 ? "" : "s"}` : "";
+  const signalText = totals.signals === 1 ? "1 source signal" : `${totals.signals} source signals`;
+  searchResult.className = "search-result has-result";
+  searchResult.innerHTML = `<strong>${totals.cases}</strong><span>${caseLabel} found for "${query}"${deathText}. ${signalText} visible.</span>`;
 }
 
 function renderTimeline() {
@@ -862,6 +928,7 @@ function startFeedRefresh() {
 function updateAll() {
   syncSelectedVisibility();
   renderSummary();
+  renderSearchResult();
   renderFilters();
   renderDateOutput();
   renderDetail();

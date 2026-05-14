@@ -12,7 +12,7 @@
       rel="stylesheet"
       href="https://js.arcgis.com/4.31/esri/themes/dark/main.css"
     />
-    <link rel="stylesheet" href="./styles.css?v=official-feed-9" />
+    <link rel="stylesheet" href="./styles.css?v=official-feed-10" />
   </head>
   <body>
     <div class="site-shell">
@@ -78,6 +78,7 @@
                   placeholder="Country, city, route, source..."
                 />
               </label>
+              <div class="search-result" id="searchResult" role="status" aria-live="polite"></div>
             </div>
 
             <div class="tool-block">
@@ -90,7 +91,7 @@
 
             <div class="tool-block compact">
               <div class="tool-title">
-                <span>Selected report window</span>
+                <span>Report data window</span>
                 <output id="dateOutput" for="dateRange"></output>
               </div>
               <input
@@ -207,6 +208,6 @@
 
     <script src="https://js.arcgis.com/4.31/"></script>
     <script src="./data/outbreak-feed.js?v=official-20260513-3"></script>
-    <script src="./app.js?v=official-feed-4"></script>
+    <script src="./app.js?v=official-feed-6"></script>
   </body>
 </html>
