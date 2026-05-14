@@ -591,7 +591,91 @@ h1 {
 
 .range {
   width: 100%;
-  accent-color: var(--amber);
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  background: transparent;
+  accent-color: var(--cyan);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.range:focus {
+  outline: none;
+}
+
+.range:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 4px rgba(65, 217, 255, 0.18),
+    0 0 18px rgba(65, 217, 255, 0.55);
+}
+
+.range:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 4px rgba(65, 217, 255, 0.18),
+    0 0 18px rgba(65, 217, 255, 0.55);
+}
+
+.range::-webkit-slider-runnable-track {
+  height: 7px;
+  border: 1px solid rgba(183, 198, 219, 0.2);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(65, 217, 255, 0.94) 0 var(--range-progress, 100%), rgba(255, 255, 255, 0.14) var(--range-progress, 100%) 100%);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(65, 217, 255, 0.11);
+}
+
+.range::-webkit-slider-thumb {
+  width: 19px;
+  height: 19px;
+  margin-top: -7px;
+  border: 2px solid #e6fbff;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ffffff 0 2px, transparent 3px),
+    linear-gradient(145deg, #41d9ff, #1d8fd7 62%, #0f2d52);
+  box-shadow:
+    0 0 0 1px rgba(65, 217, 255, 0.2),
+    0 0 18px rgba(65, 217, 255, 0.45);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.range::-moz-range-track {
+  height: 7px;
+  border: 1px solid rgba(183, 198, 219, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.45),
+    0 0 16px rgba(65, 217, 255, 0.11);
+}
+
+.range::-moz-range-progress {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(65, 217, 255, 0.94);
+}
+
+.range::-moz-range-thumb {
+  width: 19px;
+  height: 19px;
+  border: 2px solid #e6fbff;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ffffff 0 2px, transparent 3px),
+    linear-gradient(145deg, #41d9ff, #1d8fd7 62%, #0f2d52);
+  box-shadow:
+    0 0 0 1px rgba(65, 217, 255, 0.2),
+    0 0 18px rgba(65, 217, 255, 0.45);
+}
+
+.range::-moz-focus-outer {
+  border: 0;
 }
 
 .globe-stage {

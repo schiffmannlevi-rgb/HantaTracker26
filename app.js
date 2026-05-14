@@ -106,6 +106,7 @@ function syncDateOptions(selectLatest = false) {
 
   dateRange.max = String(dateOptions.length - 1);
   dateRange.value = String(state.dateIndex);
+  updateDateRangeProgress();
 }
 
 function updateDatasetStatus() {
@@ -413,6 +414,14 @@ function renderFilters() {
 function renderDateOutput() {
   const reportDate = dateOptions[state.dateIndex];
   dateOutput.textContent = formatFriendlyDate(reportDate);
+  updateDateRangeProgress();
+}
+
+function updateDateRangeProgress() {
+  const max = Number(dateRange.max) || 0;
+  const value = Number(dateRange.value) || 0;
+  const progress = max > 0 ? (value / max) * 100 : 100;
+  dateRange.style.setProperty("--range-progress", `${Math.max(0, Math.min(progress, 100))}%`);
 }
 
 function renderSearchResult() {
