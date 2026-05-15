@@ -203,6 +203,128 @@ main {
   padding: 0;
 }
 
+.snapshot-hero {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  align-items: center;
+  padding: 112px clamp(18px, 5vw, 72px) 52px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, #020407 0%, #000 58%, #05070b 100%);
+  background-size: 56px 56px, 56px 56px, auto;
+}
+
+.snapshot-hero::before {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 28%, rgba(0, 0, 0, 0.64)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.72), transparent 50%, rgba(0, 0, 0, 0.66));
+  content: "";
+  pointer-events: none;
+}
+
+.snapshot-shell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(980px, 100%);
+  gap: 22px;
+}
+
+.snapshot-shell h1 {
+  max-width: 11ch;
+  margin: 0;
+  font-size: clamp(4.4rem, 11vw, 9.8rem);
+  font-weight: 560;
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.snapshot-grid {
+  display: grid;
+  width: min(760px, 100%);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.snapshot-stat {
+  min-height: 118px;
+  padding: 16px;
+  border: 1px solid rgba(183, 198, 219, 0.18);
+  border-radius: 6px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.028));
+}
+
+.snapshot-stat span,
+.snapshot-stat small {
+  display: block;
+}
+
+.snapshot-stat span {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.snapshot-stat strong {
+  display: block;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  font-weight: 560;
+  line-height: 0.9;
+}
+
+.snapshot-stat small {
+  margin-top: 14px;
+  color: var(--soft);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.snapshot-meta {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.primary-action {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid rgba(246, 183, 73, 0.48);
+  border-radius: 5px;
+  color: #fff7df;
+  background: rgba(246, 183, 73, 0.12);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.primary-action:hover,
+.primary-action:focus-visible {
+  border-color: rgba(246, 183, 73, 0.82);
+  background: rgba(246, 183, 73, 0.18);
+  box-shadow: 0 0 0 4px rgba(246, 183, 73, 0.11);
+  outline: none;
+}
+
 .hero {
   display: grid;
   position: relative;
@@ -1399,6 +1521,14 @@ h1 {
     display: none;
   }
 
+  .snapshot-shell h1 {
+    font-size: clamp(3.4rem, 13vw, 6.8rem);
+  }
+
+  .snapshot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero {
     grid-template-columns: 1fr;
     grid-template-rows: minmax(760px, 100vh);
@@ -1566,6 +1696,60 @@ h1 {
     font-size: 0.66rem;
     font-weight: 850;
     letter-spacing: 0.08em;
+  }
+
+  .snapshot-hero {
+    min-height: 100svh;
+    padding: 92px 14px 28px;
+    background-size: 42px 42px, 42px 42px, auto;
+  }
+
+  .snapshot-shell {
+    gap: 16px;
+  }
+
+  .snapshot-shell .eyebrow {
+    margin-bottom: 0;
+  }
+
+  .snapshot-shell h1 {
+    max-width: 10ch;
+    font-size: clamp(3.05rem, 17vw, 5.8rem);
+    line-height: 0.94;
+  }
+
+  .snapshot-grid {
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .snapshot-stat {
+    min-height: 102px;
+    padding: 12px;
+  }
+
+  .snapshot-stat span {
+    font-size: 0.62rem;
+    letter-spacing: 0.09em;
+  }
+
+  .snapshot-stat strong {
+    margin-top: 14px;
+    font-size: 2.18rem;
+  }
+
+  .snapshot-stat small {
+    margin-top: 10px;
+    font-size: 0.72rem;
+  }
+
+  .snapshot-meta {
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .primary-action {
+    width: 100%;
   }
 
   .hero {
@@ -1870,6 +2054,18 @@ h1 {
 
   .status-pill::after {
     content: "ON";
+  }
+
+  .snapshot-shell h1 {
+    font-size: clamp(2.72rem, 16vw, 4.6rem);
+  }
+
+  .snapshot-stat {
+    min-height: 96px;
+  }
+
+  .snapshot-stat strong {
+    font-size: 1.96rem;
   }
 
   .globe-stage {

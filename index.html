@@ -12,12 +12,12 @@
       rel="stylesheet"
       href="https://js.arcgis.com/4.31/esri/themes/dark/main.css"
     />
-    <link rel="stylesheet" href="./styles.css?v=official-feed-13" />
+    <link rel="stylesheet" href="./styles.css?v=overview-1" />
   </head>
   <body>
     <div class="site-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="HantaTracker26 home">
+        <a class="brand" href="#overview" aria-label="HantaTracker26 home">
           <span class="brand-mark" aria-hidden="true"></span>
           <span>
             <strong>HantaTracker26</strong>
@@ -25,10 +25,9 @@
           </span>
         </a>
         <nav class="nav-links" aria-label="Primary">
-          <a href="#map">Map</a>
+          <a href="#overview">Overview</a>
+          <a href="#map">Globe</a>
           <a href="#timeline">Timeline</a>
-          <a href="#method">Method</a>
-          <a href="#about">About</a>
         </nav>
         <div class="status-pill" id="statusPill">
           <span class="status-dot"></span>
@@ -37,6 +36,16 @@
       </header>
 
       <main>
+        <section class="snapshot-hero" id="overview">
+          <div class="snapshot-shell">
+            <p class="eyebrow">Current outbreak snapshot</p>
+            <h1 id="snapshotHeadline">Loading current case snapshot.</h1>
+            <div class="snapshot-grid" id="landingStats" aria-label="Current outbreak numbers"></div>
+            <p class="snapshot-meta" id="landingUpdated">Loading official source status...</p>
+            <a class="primary-action" href="#map">Look on globe</a>
+          </div>
+        </section>
+
         <section class="hero" id="map">
           <div class="control-panel">
             <div class="panel-heading">
@@ -208,6 +217,6 @@
 
     <script src="https://js.arcgis.com/4.31/"></script>
     <script src="./data/outbreak-feed.js?v=official-20260514-2"></script>
-    <script src="./app.js?v=official-feed-12"></script>
+    <script src="./app.js?v=overview-2"></script>
   </body>
 </html>

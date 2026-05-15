@@ -10,6 +10,9 @@ const categoryMeta = {
   monitoring: { label: "Monitoring", color: "#54d990" }
 };
 
+const snapshotHeadline = document.querySelector("#snapshotHeadline");
+const landingStats = document.querySelector("#landingStats");
+const landingUpdated = document.querySelector("#landingUpdated");
 const summaryGrid = document.querySelector("#summaryGrid");
 const filterGrid = document.querySelector("#filterGrid");
 const resetFiltersButton = document.querySelector("#resetFilters");
@@ -321,6 +324,22 @@ function getSummaryReports(visible, useOfficialSummary) {
   return granularReports.length ? granularReports : visible;
 }
 
+function renderCardSet(container, cards, cardClass = "summary-card") {
+  if (!container) return;
+
+  container.innerHTML = cards
+    .map(
+      ([label, value, helper]) => `
+        <article class="${cardClass}">
+          <span>${label}</span>
+          <strong>${value}</strong>
+          <small>${helper}</small>
+        </article>
+      `
+    )
+    .join("");
+}
+
 function renderSummary() {
   const visible = getVisibleReports();
   const selectedDate = dateOptions[state.dateIndex];
@@ -360,17 +379,30 @@ function renderSummary() {
         ["Signals", summaryReports.length, "Visible source records"]
       ];
 
-  summaryGrid.innerHTML = cards
-    .map(
-      ([label, value, helper]) => `
-        <article class="summary-card">
-          <span>${label}</span>
-          <strong>${value}</strong>
-          <small>${helper}</small>
-        </article>
-      `
-    )
-    .join("");
+  renderCardSet(summaryGrid, cards);
+
+  const snapshotCards = official
+    ? [
+        ["Total", officialTotal, `Official through ${formatFriendlyDate(officialDate || selectedDate)}`],
+        ["Confirmed", official.confirmedCases, "WHO lab-confirmed"],
+        ["Probable", official.probableCases, "WHO case definition"],
+        ["Deaths", official.deaths, "WHO reported"]
+      ]
+    : cards.filter(([label]) => ["Total", "Confirmed", "Probable", "Deaths"].includes(label));
+  renderCardSet(landingStats, snapshotCards, "snapshot-stat");
+
+  const totalCard = snapshotCards.find(([label]) => label === "Total");
+  const deathCard = snapshotCards.find(([label]) => label === "Deaths");
+  if (snapshotHeadline && totalCard && deathCard) {
+    snapshotHeadline.textContent = `${totalCard[1]} cases. ${deathCard[1]} deaths.`;
+  }
+
+  if (landingUpdated) {
+    const dateText = official
+      ? `Official WHO snapshot through ${formatFriendlyDate(officialDate || selectedDate)}`
+      : `Report window through ${formatFriendlyDate(selectedDate)}`;
+    landingUpdated.textContent = `${dateText}. Counts can change as sources update.`;
+  }
 
   const visibleSignalLabel = visible.length === 1 ? "signal" : "signals";
 
