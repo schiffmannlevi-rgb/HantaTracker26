@@ -1,5 +1,5 @@
 window.HANTATRACK_FEED = {
-  "version": "official-2026-05-13-1785516520287",
+  "version": "official-2026-05-13-1785600337310",
   "meta": {
     "label": "Official source feed",
     "statusText": "WHO Disease Outbreak News DON601: 11 total cases, 8 confirmed, 2 probable, 1 inconclusive, 3 deaths.",
@@ -33,7 +33,7 @@ window.HANTATRACK_FEED = {
     ],
     "primarySource": "WHO Disease Outbreak News DON601",
     "primarySourceUrl": "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON601",
-    "lastFetched": "2026-07-31T16:48:40.287Z",
+    "lastFetched": "2026-08-01T16:05:37.310Z",
     "sourceAsOfDate": "2026-05-13",
     "updateCadence": "Daily at 8:00 AM local; page refreshes the local feed every 5 minutes."
   },
